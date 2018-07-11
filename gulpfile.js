@@ -11,7 +11,10 @@ var gulp          = require('gulp'),
 		autoprefixer  = require('gulp-autoprefixer'),
 		notify        = require("gulp-notify"),
 		rsync         = require('gulp-rsync'),
-		pug           = require('gulp-pug');
+		pug           = require('gulp-pug'),
+		htmlmin       = require('gulp-htmlmin'),
+		imagemin      = require('gulp-imagemin'),
+		gulpSequence  = require('gulp-sequence');
 
 gulp.task('browser-sync', function() {
 	browsersync({
@@ -56,10 +59,24 @@ gulp.task('js', function() {
 	.pipe(browsersync.reload({ stream: true }))
 });
 
-gulp.task('build', function(){
+gulp.task('transfer', function(){
     return gulp.src("app/**")
         .pipe(gulp.dest("dist"))
 });
+
+gulp.task('html-minify', function() {
+	return gulp.src('app/*.html')
+	  .pipe(htmlmin({collapseWhitespace: true}))
+	  .pipe(gulp.dest('dist'));
+  });
+
+gulp.task('imgmin', () =>
+  gulp.src('app/img/**/*')
+	  .pipe(imagemin())
+	  .pipe(gulp.dest('dist/img'))
+);
+
+gulp.task('build', gulpSequence('transfer', 'html-minify', 'imgmin'));
 
 gulp.task('rsync', function() {
 	return gulp.src('app/**')
