@@ -37,8 +37,15 @@
     position: relative
     margin: 0 23px
 
+    &:hover
+        polygon
+            fill: lighten($accent, 15%)
+
     .triangle
         transition: width .5s ease, height .5s ease
+
+        polygon
+            transition: fill .5s ease
 
         &.border-animation
             width: 105%
